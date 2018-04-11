@@ -24,7 +24,10 @@ function elevator(id, top_floor) {
 
     this.start_trip = function (desired_floor) {
         this.desired_floors.push(to_floor);
+        this.door_closed = true;
+        this.stopped = false;
         // Report when doors close
+        console.log('Elevator ' + this.id + ' is closing it\'s doors.');
     }
 
     this.next_floor = function () {
@@ -38,22 +41,30 @@ function elevator(id, top_floor) {
         } else {
             this.going_up ? current_floor += 1 : current_floor -= 1;
         }
+        // Report when moving from floor to floor
+        console.log('Elevator ' + this.id + ' is moving to floor ' + this.current_floor);
+        this.number_of_floors_passed += 1;
 
-        if (current_floor === desired_floor)
-
-            // Report when moving from floor to floor
-            this.num_floors += 1;
-
-
+        if (desired_floors.includes(current_floor)) {
+            this.end_trip();
+        } else {
+            this.next_floor();
+        }
 
     }
 
     this.end_trip = function () {
         this.stopped = true;
         this.door_closed = false;
+        this.desired_floors = this.desired_floors.filter(this.current_floor);
+        if (this.desired_floors.length === 0) {
+            this.occupied = false;
+        }
 
         // Report when doors open
+        console.log('Elevator ' + this.id + ' is opening it\'s doors.');
         this.number_of_trips += 1;
+        this.trips_until_maintenance -= 1;
     }
 }
 
@@ -66,7 +77,7 @@ function elevator_controller(num_elevators, num_floors) {
     }
 
     this.find_best_elevator = function (desired_floor) {
-        var possible_elevators = this.elevators.filter(e => e.trips_until_maintenance !== 0).filter(e => (e.current_floor > desired_floor && !e.going_up && !e.stopped)
+        var possible_elevators = this.elevators.filter(e => e.trips_until_maintenance <= 0).filter(e => (e.current_floor > desired_floor && !e.going_up && !e.stopped)
             || (e.current_floor < desired_floor && e.going_up && !e.stopped) || !e.occupied);
         var best_elevator;
         var lowest_distance = num_floors;
