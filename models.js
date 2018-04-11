@@ -23,17 +23,27 @@ function elevator(id) {
 
     this.start_trip = function (desired_floor) {
         this.desired_floor = desired_floor;
+        // Report when doors close
     }
 
     this.next_floor = function () {
         // Confirm we are not on the top floor or bottom floor
         // Report when moving from floor to floor
         this.num_floors += 1;
-        // Report when doors open or close
+
     }
 
     this.end_trip = function () {
+        // Report when doors open
         this.number_of_trips += 1;
+    }
+
+    // this returns an integer based on how likely this elevator 
+    // is going to be the best fit to answer the request
+    this.calculate_best_fit = function (requested_floor) {
+        if (!this.occupied) {
+
+        }
     }
 }
 
@@ -41,8 +51,18 @@ function elevator_controller(num_elevators) {
     // TODO: init elevators
     this.elevators = [];
 
-    this.find_best_elevator = function (floor) {
-
+    this.find_best_elevator = function (desired_floor) {
+        // check unoccupied elevators
+        var best_elevators = this.elevators.filter(e => !e.occupied);
+        var best_elevator;
+        if (best_elevators.length < 1) {
+            // check occupied elevators moving towards the desired floor
+            best_elevators = this.elevators.filter(e => (e.current_floor > desired_floor && !e.going_up && !e.stopped)
+                || (e.current_floor < desired_floor && e.going_up && !e.stopped));
+                            
+        } else {
+             best_elevator = this.best_elevators.filter(e => e.current_floor === desired_floor)
+        }
     }
     this.dispatch_elevator = function (elevator, floor) {
 
